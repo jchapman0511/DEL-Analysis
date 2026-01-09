@@ -27,8 +27,8 @@ def fileGrab(file):
     data_unique = data_validSMILES.drop_duplicates(subset = 'SMILES')
     return data_unique
 def activeGrab(data):
-    data['active'] = [1 if data['target_zscore'].values[index] >= 3 and
-                      data['target_count'].values[index] >= 1 else 0 for
+    data['active'] = [1 if data['target_zscore'].values[index] >= 1 and
+                      data['target_count'].values[index] >= 3 else 0 for
                       index in range(len(data))]
     return data[data['active'] == 1]
 def vennPlot(actives):
