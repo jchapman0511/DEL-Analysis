@@ -3,11 +3,12 @@ from glob import glob
 from os.path import splitext, basename
 import pandas as pd
 from rdkit.Chem import CanonSmiles, MolFromSmiles
+from scipy.stats import rankdata
+from numpy import array
 from mhfp.encoder import MHFPEncoder
 import tmap as tm
 from faerun import Faerun
 from matplotlib.colors import ListedColormap
-import scipy.stats as ss
 from os import makedirs
 
 def main():
@@ -44,6 +45,8 @@ def tmapPlot(data, target):
     counts = data['target_count'].tolist()
     zscores = data['target_zscore'].tolist()
     activities = data['activity'].tolist()
+    counts_ranked = rankdata(array(counts) / max(counts)) / len(counts)
+    zscores_ranked = rankdata(array(zscores) / max(zscores)) / len(zscores)
     info = zip(smiles, libraries, bb1s, bb2s, bb3s, counts, zscores, activities)
     labels = []
     for smile, library, bb1, bb2, bb3, count, zscore, activity in info:
@@ -67,35 +70,41 @@ def tmapPlot(data, target):
     fae = Faerun(
         clear_color = '#222222', coords = False, view = 'front'
     )
-    colormap_activity = ListedColormap(["#1A1919", '#4B9CD3'], name = 'activity')
+    colormap_activity = ListedColormap(["#222222", '#4B9CD3'], name = 'activity')
     fae.add_scatter(
         'DEL',
         {
             'x': x, 'y': y, 'c':[
-                counts, zscores, activities
+                counts, counts_ranked, zscores, zscores_ranked, activities
             ],
             'labels': labels
         },
         shader = 'circle',
-        colormap = ['Blues', 'Blues', colormap_activity],
-        point_scale = 2.5,
+        colormap = ['viridis', 'viridis', 'viridis', 'viridis', colormap_activity],
+        point_scale = 5,
         has_legend = True,
         selected_labels = ['Structure', 'SMILES', 'Library', 'Building Block 1', 'Building Block 2',
                            'Building Block 3', 'Count', 'Z Score', 'Activity'],
-        categorical = [False, False, True],
-        series_title = ['Counts', 'Z Scores', 'Activity'],
+        categorical = [False, False, False, False, True],
+        series_title = ['Counts', 'Counts Ranked', 'Z Scores', 'Z Scores Ranked', 'Activity'],
         max_legend_label = [
             str(round(max(counts))),
+            str(len(counts_ranked)),
             str(round(max(zscores))),
+            str(len(zscores_ranked)),
             'Active'
         ],
         min_legend_label = [ 
             str(round(min(counts))),
+            str(len(counts_ranked)),
             str(round(min(zscores))),
+            str(len(zscores_ranked)),
             'Inactive'    
         ],
         title_index = 2,
-        legend_title = 'Compound Information'
+        legend_title = ['Metric: Counts', 'Metric: Counts', 
+                        'Metric: Z Scores', 'Metric: Z Scores',
+                        'Activity']
     )
     fae.add_tree(f'{target}Tree', {'from':s, 'to': t}, point_helper = 'DEL')
     makedirs('Figures/tmap', exist_ok = True)
