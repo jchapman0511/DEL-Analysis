@@ -96,9 +96,9 @@ def tmapPlot(data, target):
         ],
         min_legend_label = [ 
             str(round(min(counts))),
-            str(len(counts_ranked)),
+            '0',
             str(round(min(zscores))),
-            str(len(zscores_ranked)),
+            '0',
             'Inactive'    
         ],
         title_index = 2,
