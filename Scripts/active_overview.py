@@ -23,19 +23,22 @@ def main():
     return print('Total Runtime (seconds): ', round(time() - start_time, 2))
 def dataGrab(file):
     data_raw = pd.read_parquet(file)
-    data_raw['target'] = splitext(basename(file))[0]
-    data_validSMILES = data_raw[data_raw['SMILES'].notna()]
-    data = data_validSMILES.drop_duplicates(subset = 'SMILES')
-    return data
+    data_sorted = data_raw.sort_values(by = 'target_count')
+    data_sorted['target'] = splitext(basename(file))[0]
+    data_validSMILES = data_sorted[data_sorted['SMILES'].notna()]
+    data_unique = data_validSMILES.drop_duplicates(subset = 'SMILES')
+    return data_unique
 def activeGrab(data, value_count):
     data[['Lib', 'BB1', 'BB2', 'BB3']] = data['compound'].str.split('-', expand = True)
     data['active'] = [1 if data['target_zscore'].values[index] >= 1 and
                       data['target_count'].values[index] >= value_count else 0 for
                       index in range(len(data))]
-    return data[data['active'] == 1]
+    data_actives = data[data['active'] == 1]
+    return data_actives
 def activeProcess(data):
     data_processed = pd.DataFrame({
-        'Target': data['target'].unique(), 'Active Count': len(data),
+        'Target': data['target'].unique(), 
+        'Active Count': len(set(data['SMILES'].tolist())),
         'Unique Active Libraries': len(data['Lib'].unique())
     })
     return data_processed
