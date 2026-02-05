@@ -18,5 +18,5 @@ make
 
  For this, activate the tmap environment and run:
 ```bash
-make Figures/tmap
+make tmap
 ``` 
