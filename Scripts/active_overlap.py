@@ -29,7 +29,7 @@ def main():
     return print('Total Runtime (seconds): ', round(time() - start_time, 2))
 def fileGrab(file):
     data_raw = pd.read_parquet(file)
-    data_sorted = data_raw.sort_values(by = 'target_count')
+    data_sorted = data_raw.sort_values(by = 'target_count', ascending = False)
     data_validSMILES = data_sorted[data_sorted['SMILES'].notna()]
     data_unique = data_validSMILES.drop_duplicates(subset = 'SMILES')
     return data_unique

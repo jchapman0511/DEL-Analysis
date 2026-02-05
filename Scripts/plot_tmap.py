@@ -26,7 +26,7 @@ def dataGrab(file):
     data_raw['activity'] = [1 if data_raw['target_zscore'].values[index] >= 1 and
                       data_raw['target_count'].values[index] >= 3 else 0 for
                       index in range(len(data_raw))]
-    data_sorted = data_raw.sort_values(by = 'target_count')
+    data_sorted = data_raw.sort_values(by = 'target_count', ascending = False)
     data_validSMILES = data_sorted[data_sorted['SMILES'].notna()]
     data_unique = data_validSMILES.drop_duplicates(subset = 'SMILES')
     data_actives = data_unique[data_unique['activity'] == 1]
