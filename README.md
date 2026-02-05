@@ -10,4 +10,13 @@ Currently, this tool has the following scripts:
 - modelGen.py -> Generates simple Random Forest classification models that are optimized for [PPV](https://github.com/molecularmodelinglab/plate-ppv) metrics based on 5-fold cross validation
 
 ## Running the Scripts
-These scripts will be designed to run through make that will help to streamline the process. 
+These scripts will be designed to run through make that will help to streamline the process. To run these scripts, create conda environments from the envs/ directory. The DEL-Analysis environment will work run all pipeline processes, except for plot_tmap.py. This can be done through:
+
+```bash
+make
+```
+
+ For this, activate the tmap environment and run:
+```bash
+make Figures/tmap
+``` 
